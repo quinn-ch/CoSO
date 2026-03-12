@@ -1,0 +1,28 @@
+{
+    "prefix": "reproduce",
+    "dataset": "cifar100",
+    "memory_size": 0,
+    "memory_per_class": 0,
+    "fixed_memory": false,
+    "shuffle": false,
+    "init_cls": 10,
+    "increment": 10,
+    "embd_dim": 768,
+    "total_sessions": 10,
+    "model_name": "coso",
+    "backbone_type": "vit_base_patch16_224",
+    
+    "seed": [0, 10, 20],
+    "epochs": 20,
+    "lrate": 0.0003,
+    "fc_lrate": 0.0005,
+    "weight_decay": 0.0,
+    "batch_size": 128,
+    "temperature": 3,
+
+    "proj_rank": 15,
+    "rank": 100,
+    "db_decay": 1.0,
+    "threshold": 0.98,
+    "update_gap": 1
+}

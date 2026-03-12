@@ -1,0 +1,12 @@
+data/
+logs/
+run_logs/
+pretrained/
+.idea/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.log
+*.bin
+*.ipynb
+*.pdf

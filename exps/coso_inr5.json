@@ -1,0 +1,28 @@
+{
+    "prefix": "reproduce",
+    "dataset": "imagenetr",
+    "memory_size": 0,
+    "memory_per_class": 0,
+    "fixed_memory": false,
+    "shuffle": false,
+    "init_cls": 40,
+    "increment": 40,
+    "embd_dim": 768,
+    "total_sessions": 5,
+    "model_name": "coso",
+    "backbone_type": "vit_base_patch16_224",
+    
+    "seed": [0, 10, 20],
+    "epochs": 40,
+    "lrate": 0.0004,
+    "fc_lrate": 0.0004,
+    "weight_decay": 0.0,
+    "batch_size": 128,
+    "temperature": 3,
+
+    "proj_rank": 50,
+    "rank": 120,
+    "db_decay": 1.0,
+    "threshold": 0.98,
+    "update_gap": 1
+}
