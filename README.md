@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>CoSO: Continuous Subspace Optimization for Continual Learning</h1>
+<h1>Continuous Subspace Optimization for Continual Learning</h1>
 
 [![NeurIPS 2025](https://img.shields.io/badge/NeurIPS-2025-4b44ce.svg)](https://proceedings.neurips.cc/paper_files/paper/2025/hash/1663fba7b56da1e96bed6e30546a07b0-Abstract-Conference.html) [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.7.0-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
