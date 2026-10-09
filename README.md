@@ -1,129 +1,100 @@
-[![arXiv](https://img.shields.io/badge/arXiv-2505.11816-b31b1b.svg)](https://arxiv.org/abs/2505.11816)
-[![Conference](https://img.shields.io/badge/NeurIPS-2025-blue)](https://arxiv.org/abs/2505.11816)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.7.0-ee4c2c.svg)](https://pytorch.org/)
-[![timm](https://img.shields.io/badge/timm-0.6.12-green)](https://github.com/huggingface/pytorch-image-models)
+<div align="center">
 
+<h1>CoSO: Continuous Subspace Optimization for Continual Learning</h1>
 
+[![NeurIPS 2025](https://img.shields.io/badge/NeurIPS-2025-4b44ce.svg)](https://proceedings.neurips.cc/paper_files/paper/2025/hash/1663fba7b56da1e96bed6e30546a07b0-Abstract-Conference.html) [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.7.0-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-# CoSO: Continuous Subspace Optimization for Continual Learning
+**[Paper](https://proceedings.neurips.cc/paper_files/paper/2025/hash/1663fba7b56da1e96bed6e30546a07b0-Abstract-Conference.html)** &nbsp;·&nbsp; **[Overview](#overview)** &nbsp;·&nbsp; **[Results](#main-results)** &nbsp;·&nbsp; **[Getting Started](#getting-started)** &nbsp;·&nbsp; **[Citation](#citation)**
 
-This repository contains the official implementation of **CoSO**, introduced in **[Continuous Subspace Optimization for Continual Learning](https://arxiv.org/abs/2505.11816)**.
+</div>
 
-**Strong performance in pre-trained continual learning:**  
+---
 
-CoSO is a parameter-efficient continual learning method designed for pre-trained vision transformers.  Instead of restricting optimization to a single fixed low-rank subspace, CoSO performs learning in a sequence of dynamically constructed subspaces, which improves adaptation while reducing catastrophic forgetting.
+> **TL;DR:** CoSO fine-tunes pre-trained models in continuous low-rank subspaces for continual learning.
 
-**Memory-efficient optimization:**  
+---
 
-CoSO updates model parameters by projecting gradients onto task-aware subspaces derived from gradient SVD.  It also enforces orthogonality between the current task subspace and historical task subspaces to preserve previously acquired knowledge.
+## Overview
 
-## Method Overview
+Existing parameter-efficient continual learning methods usually rely on low-rank adaptation, which restricts parameter updates to a fixed low-rank subspace and limits their learning capacity. CoSO instead optimizes the model in a series of subspaces derived from the singular value decomposition of the gradients.
 
-CoSO constructs optimization subspaces from gradient information and continuously updates them across tasks.  
+<div align="center">
+<img src="assets/coso.png" alt="CoSO framework" width="900">
+</div>
 
-It projects parameter updates into these subspaces and maintains orthogonality with historical task subspaces to preserve old knowledge.
+- **Continuous subspace optimization:** low-rank gradient projections from SVD, refreshed throughout training.
+- **Orthogonal projection:** each task's optimization subspace kept orthogonal to the historical task subspace.
+- **Historical subspace update:** task-specific subspaces estimated via Frequent Directions and merged after each task.
 
-The key ideas are:
+## Main results
 
-- Build task-specific optimization subspaces from gradient information
-- Project updates into these subspaces for efficient adaptation
-- Keep the current task subspace orthogonal to historical task subspaces
-- Accumulate a historical subspace after each task to mitigate forgetting
+<div align="center">
+<img src="assets/table1.png" alt="Results on ImageNet-R" width="900">
+<br><em>Results (%) on ImageNet-R, mean ± std over 3 runs.</em>
+</div>
 
-This leads to stronger plasticity-stability trade-offs, especially in more difficult incremental settings.
+<div align="center">
+<img src="assets/curves.png" alt="Per-task accuracy curves on ImageNet-R" width="900">
+<br><em>Accuracy on ImageNet-R with 5, 10 and 20 tasks.</em>
+</div>
 
-<img src="./figures/coso.png" width="85%" alt="Overview of CoSO" style="display: block; margin: auto;">
+## Getting started
 
-## Usage
-
-### Environment Setup
-
-We recommend using a dedicated conda environment:
+### 1. Installation
 
 ```bash
-conda create -n cil python=3.10 -y
-conda activate cil
+conda create -n coso python=3.10 -y
+conda activate coso
 pip install torch==2.7.0 torchvision==0.22.0
 pip install timm==0.6.12 tqdm numpy pyyaml wandb transformers
 ```
 
-### Pretrained Weights
+The backbone is timm `vit_base_patch16_224`, which timm downloads on the first run.
 
-Please download the pre-trained ViT backbone checkpoint from the [timm Hugging Face page](https://huggingface.co/timm/vit_base_patch16_224.augreg_in21k_ft_in1k) and place it in the `pretrained/` directory before running the experiments.
+### 2. Data preparation
 
-Expected directory structure:
+Download [ImageNet-R](https://people.eecs.berkeley.edu/~hendrycks/imagenet-r.tar) and [DomainNet](http://ai.bu.edu/M3SDA/), and arrange them under `data/` in the repository root:
 
-```bash
-.
-├── pretrained/
-│   └── vit_base_patch16_224_augreg_in21k_ft_in1k.bin
+```text
+data/
+├── cifar-100-python/          # downloaded automatically by torchvision
+├── imagenet-r/{train,test}/
+└── DomainNet/{clipart,infograph,painting,real,sketch}/
 ```
 
-For the default CoSO setting with `vit_base_patch16_224`, the code expects the checkpoint file at:
+The DomainNet split is defined in `utils/domainnet_trainb.yaml` and `utils/domainnet_testb.yaml`.
+
+### 3. Usage Example
 
 ```bash
-./pretrained/vit_base_patch16_224_augreg_in21k_ft_in1k.bin
+python main.py --config ./exps/coso_inr.json --device 0
 ```
 
-### Dataset Preparation
-
-We provide experiment configs for several continual learning benchmarks. Create a folder `data/`. Please prepare the dataset according to the target config before launching an experiment.
-
-- `cifar100`: automatically downloaded to `./data` by torchvision.
-- `ImageNet-R`: download dataset from https://people.eecs.berkeley.edu/~hendrycks/imagenet-r.tar. After unzipping, place it into `data/` folder
-- `DomainNet`: download from http://ai.bu.edu/M3SDA/, place it into `data/` folder. The provided `coso_domain` setup uses the split lists in `utils/domainnet_trainb.yaml` and `utils/domainnet_testb.yaml`.
-
-### Run Experiments
-
-All experiments are launched through `main.py` with a JSON config:
-
-```bash
-python main.py --config=./exps/{config_name}.json --device 0
-```
-
-Examples:
-
-```bash
-# CIFAR-100
-python main.py --config=./exps/coso_cifar.json --device 0
-
-# ImageNet-R, 5 sessions
-python main.py --config=./exps/coso_inr5.json --device 0
-
-# ImageNet-R, 10 sessions
-python main.py --config=./exps/coso_inr.json --device 0
-
-# ImageNet-R, 20 sessions
-python main.py --config=./exps/coso_inr20.json --device 0
-
-# DomainNet
-python main.py --config=./exps/coso_domain.json --device 0
-```
-
-Training logs are saved under:
-
-```bash
-./logs/{model_name}/{dataset}/{init_cls}/{increment}/
-```
+Other settings are in `exps/`: `coso_cifar.json` (CIFAR-100), `coso_inr5.json` / `coso_inr.json` / `coso_inr20.json` (ImageNet-R with 5 / 10 / 20 tasks) and `coso_domain.json` (DomainNet). Logs are saved under `logs/`.
 
 ## Citation
 
-If you use this repository, please cite the CoSO paper:
+If you find our work useful for your research, please star our project and cite our work.
 
-```bash
+```bibtex
 @inproceedings{cheng2025continuous,
-  title={Continuous Subspace Optimization for Continual Learning},
-  author={Cheng, Quan and Wan, Yuanyu and Wu, Lingyu and Hou, Chenping and Zhang, Lijun},
-  booktitle={Advances in Neural Information Processing Systems},
-  volume={38},
-  year={2025}
+  title     = {Continuous Subspace Optimization for Continual Learning},
+  author    = {Cheng, Quan and Wan, Yuanyu and Wu, Lingyu and Hou, Chenping and Zhang, Lijun},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {38},
+  pages     = {15376--15398},
+  year      = {2025}
 }
 ```
 
-## Contact
+## Acknowledgements
 
-For issues related to this implementation, please open an issue in the project repository.
+This project builds upon excellent open-source work:
 
-## Paper
+- [GaLore](https://github.com/jiaweizzhao/GaLore)
+- [LAMDA-PILOT](https://github.com/sun-hailong/LAMDA-PILOT)
 
-- arXiv: [Continuous Subspace Optimization for Continual Learning](https://arxiv.org/abs/2505.11816)
+
+## License
+
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
