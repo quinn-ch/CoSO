@@ -79,9 +79,8 @@ If you find our work useful for your research, please star our project and cite 
 ```bibtex
 @inproceedings{cheng2025continuous,
   title     = {Continuous Subspace Optimization for Continual Learning},
-  author    = {Cheng, Quan and Wan, Yuanyu and Wu, Lingyu and Hou, Chenping and Zhang, Lijun},
+  author    = {Quan Cheng and Yuanyu Wan and Lingyu Wu and Chenping Hou and Lijun Zhang},
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  volume    = {38},
   pages     = {15376--15398},
   year      = {2025}
 }
